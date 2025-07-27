@@ -13,9 +13,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from oauth2client.service_account import ServiceAccountCredentials
 import os
-import gspread
 import traceback
 from datetime import datetime
 
@@ -53,26 +51,26 @@ def print_debug(message):
         print(f"[DEBUG] {message}")
 
 # ========== GOOGLE SHEETS SETUP ==========
-def setup_gsheet():
-    try:
-        scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-        creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', scope)
-        client = gspread.authorize(creds)
-        sheet = client.open("LinkedIn_Connections_Log").sheet1
-        return sheet
-    except Exception as e:
-        print(f"[!] Google Sheets setup error: {e}")
-        print("[!] Continuing without logging to Google Sheets...")
-        return None
+# def setup_gsheet():
+#     try:
+#         scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+#         creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', scope)
+#         client = gspread.authorize(creds)
+#         sheet = client.open("LinkedIn_Connections_Log").sheet1
+#         return sheet
+#     except Exception as e:
+#         print(f"[!] Google Sheets setup error: {e}")
+#         print("[!] Continuing without logging to Google Sheets...")
+#         return None
 
-def log_to_sheet(sheet, name, profile_url, status="Pending", notes=""):
-    if sheet:
-        try:
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            sheet.append_row([timestamp, name, profile_url, status, notes])
-            print(f"[✓] Logged {status} connection with {name} to Google Sheet")
-        except Exception as e:
-            print(f"[!] Failed to log to sheet: {e}")
+# def log_to_sheet(sheet, name, profile_url, status="Pending", notes=""):
+#     if sheet:
+#         try:
+#             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+#             sheet.append_row([timestamp, name, profile_url, status, notes])
+#             print(f"[✓] Logged {status} connection with {name} to Google Sheet")
+#         except Exception as e:
+#             print(f"[!] Failed to log to sheet: {e}")
 
 # ============ SELENIUM SETUP ============
 def setup_driver():
