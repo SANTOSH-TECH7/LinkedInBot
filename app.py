@@ -1,11 +1,11 @@
-# app.py
 from fastapi import FastAPI, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.requests import Request
 from linkedin_hr_bot import run_bot
 
-app = FastAPI()
+app = FastAPI()  # ✅ Don't forget this
+
 templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
