@@ -10,9 +10,12 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
-import gspread
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from oauth2client.service_account import ServiceAccountCredentials
 import os
+import gspread
 import traceback
 from datetime import datetime
 
@@ -74,34 +77,38 @@ def log_to_sheet(sheet, name, profile_url, status="Pending", notes=""):
 # ============ SELENIUM SETUP ============
 def setup_driver():
     options = Options()
-    
+
+    # Check HEADLESS environment variable
+    headless_env = os.getenv("HEADLESS", "true").lower()
+    HEADLESS = headless_env in ("true", "1", "yes")
+
     if not HEADLESS:
         options.add_argument("--start-maximized")
     else:
-        options.add_argument("--headless=new")  # Updated headless mode syntax
+        options.add_argument("--headless")
         options.add_argument("--window-size=1920,1080")
-    
+
     options.add_argument("--disable-notifications")
     options.add_argument("--disable-popup-blocking")
-    
-    # Disable logging
-    options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")
     options.add_argument("--log-level=3")
-    
-    # Handle common Selenium issues
-    options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    options.add_experimental_option("useAutomationExtension", False)
-    
-    # Add user agent to appear more like a real browser
+
+    # User-agent to avoid bot detection
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36")
-    
+
+    # Path to system-installed ChromeDriver (in Docker: should already be installed via `apt`)
+    chrome_path = "/usr/bin/chromium"
+    driver_path = "/usr/bin/chromedriver"
+
     try:
-        service = Service(ChromeDriverManager().install())
+        service = Service(driver_path)
+        options.binary_location = chrome_path
         driver = webdriver.Chrome(service=service, options=options)
         return driver
     except Exception as e:
         print(f"[!] Driver setup error: {e}")
-        print("[*] Try installing webdriver-manager: pip install webdriver-manager")
         exit(1)
 
 # ============ LOGIN TO LINKEDIN ============
