@@ -1,10 +1,10 @@
 FROM python:3.10-slim
 
-# Prevents Python from writing pyc files to disk
+# Prevent .pyc files and enable unbuffered logs
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Install dependencies including Chromium
+# Install system packages and Chromium
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
@@ -18,7 +18,6 @@ RUN apt-get update && apt-get install -y \
     libfontconfig1 \
     libxss1 \
     libappindicator1 \
-    libindicator7 \
     fonts-liberation \
     libasound2 \
     libatk-bridge2.0-0 \
@@ -31,15 +30,15 @@ RUN apt-get update && apt-get install -y \
 # Set working directory
 WORKDIR /app
 
-# Copy all project files
+# Copy project files
 COPY . .
 
-# Upgrade pip and install requirements
+# Install Python dependencies
 RUN pip install --upgrade pip setuptools wheel
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose port for FastAPI
+# Expose FastAPI port
 EXPOSE 10000
 
-# Start FastAPI app
+# Start FastAPI
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "10000"]
