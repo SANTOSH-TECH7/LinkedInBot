@@ -11,7 +11,7 @@ oauth2client==4.1.3
 beautifulsoup4==4.12.3
 requests==2.31.0
 fake-useragent==1.5.1
-pandas==1.5.3
+pandas==1.5.3  # ✅ safe with Py 3.10 and Ubuntu
 python-dotenv==1.0.1
 jinja2==3.1.3
 blinker==1.6.2
