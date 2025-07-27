@@ -1041,7 +1041,7 @@ def run_bot(username, password, search_keyword):
     try:
         print("[*] Starting LinkedIn Bot (via Web)...")
 
-        previous_sent = load_progress()
+        previous_sent = load_progress()  # You can still use local file-based tracking
         remaining_requests = DAILY_REQUEST_LIMIT - previous_sent
         if remaining_requests <= 0:
             return f"Daily limit reached. Please try tomorrow."
@@ -1050,18 +1050,22 @@ def run_bot(username, password, search_keyword):
         MAX_REQUESTS = min(MAX_REQUESTS, remaining_requests)
         print(f"[*] Adjusted request limit to {MAX_REQUESTS} based on previous activity")
 
-        sheet = setup_gsheet()
         driver = setup_driver()
         login(driver)
         sleep(random.uniform(5, 8))
         perform_random_activity(driver)
-        check_invitation_status(driver, sheet)
+
+        # ❌ REMOVE this line (Google Sheets)
+        # check_invitation_status(driver, sheet)
 
         # Optional: enable invitation cleanup
         # cleanup_old_invitations(driver, max_age_days=14)
 
         search_urls = search_profiles(driver)
-        final_sent = send_connection_requests(driver, search_urls, sheet, previous_sent)
+
+        # ✅ Call the function without sheet
+        final_sent = send_connection_requests(driver, search_urls, previous_sent)
+
         save_progress(final_sent)
         perform_random_activity(driver)
 
@@ -1087,4 +1091,5 @@ def run_bot(username, password, search_keyword):
             print("[*] Closing browser...")
             driver.quit()
         print("[*] Bot session ended.")
+
 
